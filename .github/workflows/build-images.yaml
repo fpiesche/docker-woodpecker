@@ -1,0 +1,75 @@
+name: Build multi-platform Docker images
+
+on:
+  # Allow manual runs.
+  workflow_dispatch:
+  # Also run on updates to this repo.
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  
+env:
+  PLATFORMS: linux/arm/v6,linux/arm/v7,linux/arm64/v8,linux/amd64
+
+jobs:
+
+  build-image:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Docker Setup QEMU
+        uses: docker/setup-qemu-action@v1.0.1
+
+      - name: Docker Setup Buildx
+        uses: docker/setup-buildx-action@v1.0.3
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v1 
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Get Woodpecker version
+        id: get_woodpecker_version
+        run: |
+          cd woodpecker
+          WOODPECKER_VERSION=$(git describe --tags --abbrev=0)
+          echo "WOODPECKER_VERSION=${WOODPECKER_VERSION}" >> $GITHUB_ENV
+
+      - name: Output Woodpecker version
+        id: output_woodpecker_version
+        run: echo "Latest Woodpecker version is ${WOODPECKER_VERSION}."
+
+      # - name: Build Woodpecker
+      #   uses: docker/build-push-action@v2.1.0
+      #   with:
+      #     file: Dockerfile.build
+      #     tags: woodpecker-build
+      #     platforms: ${{ env.PLATFORMS }}
+      #     push: false
+      #     build-args: [ VERSION=${WOODPECKER_VERSION} ]
+
+      # - name: Build and push Woodpecker Server image
+      #   uses: docker/build-push-action@v2.1.0
+      #   with:
+      #     file: Dockerfile.server
+      #     tags: |
+      #       florianpiesche/woodpecker-server
+      #       florianpiesche/woodpecker-server:${WOODPECKER_VERSION}
+      #     platforms: ${{ env.PLATFORMS }}
+      #     push: true
+
+      # - name: Build and push Woodpecker Agent image
+      #   uses: docker/build-push-action@v2.1.0
+      #   with:
+      #     file: Dockerfile.agent
+      #     tags: |
+      #       florianpiesche/woodpecker-agent
+      #       florianpiesche/woodpecker-agent:${WOODPECKER_VERSION}
+      #     platforms: ${{ env.PLATFORMS }}
+      #     push: true
