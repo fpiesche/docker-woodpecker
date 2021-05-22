@@ -1,0 +1,3 @@
+[submodule "woodpecker"]
+	path = woodpecker
+	url = https://github.com/laszlocph/woodpecker.git
