@@ -1,0 +1,16 @@
+# STAGE 1: Run tests
+FROM golang:alpine as test
+ARG VERSION
+RUN apk add --no-cache gcc musl-dev
+ADD ./woodpecker /woodpecker
+
+ENV VERSION=${VERSION} GOOS=linux
+WORKDIR /woodpecker
+RUN go test -cover $(go list ./...)
+
+# STAGE 2: build
+FROM test AS build
+ARG VERSION
+ENV VERSION=${VERSION} GOOS=linux
+RUN go build -ldflags '-extldflags "-static" -X github.com/laszlocph/woodpecker/version.Version='${VERSION} -o release/drone-server github.com/laszlocph/woodpecker/cmd/drone-server
+RUN go build -ldflags '-X github.com/laszlocph/woodpecker/version.Version='${VERSION} -o release/drone-agent github.com/laszlocph/woodpecker/cmd/drone-agent
