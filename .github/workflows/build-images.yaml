@@ -21,6 +21,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+        with:
+          submodules: recursive
 
       - name: Docker Setup QEMU
         uses: docker/setup-qemu-action@v1.0.1
