@@ -19,6 +19,12 @@ jobs:
   build-image:
     runs-on: ubuntu-latest
 
+    services:
+      registry:
+        image: registry:2
+        ports:
+          - 5000:5000
+
     steps:
       - uses: actions/checkout@v2
         with:
@@ -54,9 +60,9 @@ jobs:
         uses: docker/build-push-action@v2.1.0
         with:
           file: Dockerfile.build
-          tags: woodpecker-build
+          tags: localhost:5000/woodpecker/build
           platforms: ${{ env.PLATFORMS }}
-          push: false
+          push: true
           build-args: VERSION=${{ env.WOODPECKER_VERSION }}
 
       - name: Build and push Woodpecker Server image

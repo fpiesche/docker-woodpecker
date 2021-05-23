@@ -6,6 +6,6 @@ ENV DATABASE_CONFIG=/var/lib/drone/drone.sqlite
 ENV GODEBUG=netdns=go
 ENV XDG_CACHE_HOME /var/lib/drone
 
-COPY --from=woodpecker-build /woodpecker/release/drone-server /bin/
+COPY --from=localhost:5000/woodpecker/build /woodpecker/release/drone-server /bin/
 
 CMD ["/bin/drone-server"]
