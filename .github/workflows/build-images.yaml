@@ -57,7 +57,7 @@ jobs:
           tags: woodpecker-build
           platforms: ${{ env.PLATFORMS }}
           push: false
-          build-args: VERSION=${WOODPECKER_VERSION}
+          build-args: VERSION=${{ env.WOODPECKER_VERSION }}
 
       - name: Build and push Woodpecker Server image
         uses: docker/build-push-action@v2.1.0
@@ -65,7 +65,7 @@ jobs:
           file: Dockerfile.server
           tags: |
             florianpiesche/woodpecker-server
-            florianpiesche/woodpecker-server:${WOODPECKER_VERSION}
+            florianpiesche/woodpecker-server:${{ env.WOODPECKER_VERSION }}
           platforms: ${{ env.PLATFORMS }}
           push: true
 
@@ -75,6 +75,6 @@ jobs:
           file: Dockerfile.agent
           tags: |
             florianpiesche/woodpecker-agent
-            florianpiesche/woodpecker-agent:${WOODPECKER_VERSION}
+            florianpiesche/woodpecker-agent:${{ env.WOODPECKER_VERSION }}
           platforms: ${{ env.PLATFORMS }}
           push: true
