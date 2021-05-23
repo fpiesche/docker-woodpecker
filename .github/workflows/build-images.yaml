@@ -40,6 +40,8 @@ jobs:
         id: get_woodpecker_version
         run: >
           cd woodpecker;
+          pwd;
+          ls;
           WOODPECKER_VERSION=$(git describe --tags --abbrev=0);
           echo "WOODPECKER_VERSION=${WOODPECKER_VERSION}" >> $GITHUB_ENV
 
