@@ -41,9 +41,7 @@ jobs:
         run: >
           cd woodpecker;
           git fetch --tags;
-          git rev-list --tags --max-count 1;
-          git describe --tags $(git rev-list --tags --max-count 1)
-          LATEST_TAG_REV=$(git rev-list --tags --max-count 1)
+          LATEST_TAG_REV=$(git rev-list --tags --max-count 1);
           WOODPECKER_VERSION=$(git describe --tags ${LATEST_TAG_REV});
           echo "WOODPECKER_VERSION=${WOODPECKER_VERSION}" >> $GITHUB_ENV;
           git checkout ${WOODPECKER_VERSION}
