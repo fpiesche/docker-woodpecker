@@ -39,7 +39,9 @@ jobs:
       - name: Get current Woodpecker revision ID
         run: |
           cd woodpecker
-          echo "WOODPECKER_VERSION=$(git rev-parse HEAD)" >> $GITHUB_ENV
+          CURRENT_REV=$(git rev-parse HEAD)
+          echo "Building dev images from rev ${CURRENT_REV}"
+          echo "WOODPECKER_VERSION=${CURRENT_REV}" >> $GITHUB_ENV
 
       - name: Docker Setup QEMU
         uses: docker/setup-qemu-action@v1.0.1
