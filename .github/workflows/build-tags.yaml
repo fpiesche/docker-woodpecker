@@ -47,29 +47,40 @@ jobs:
 
       - name: Check whether latest release needs building
         run: |
-          TAGS=$(curl -s https://registry.hub.docker.com/v1/repositories/florianpiesche/woodpecker-server/tags | jq -r ".[].name")
-
-          for tag in ${TAGS[@]}; do
+          SERVER_TAGS=$(curl -s https://registry.hub.docker.com/v1/repositories/florianpiesche/woodpecker-server/tags | jq -r ".[].name")
+          for tag in ${SERVER_TAGS[@]}; do
             if [[ "$tag" == "${WOODPECKER_VERSION}" ]]; then
-              echo "WOODPECKER_BUILD_TAG=false" >> $GITHUB_ENV
+              echo "Server ${tag} has already been built."
+              echo "WOODPECKER_BUILD_SERVER=false" >> $GITHUB_ENV
               exit 0
             fi
           done
+          echo "Server ${WOODPECKER_VERSION} needs to be built."
+          echo "WOODPECKER_BUILD_SERVER=true" >> $GITHUB_ENV
 
-          echo "WOODPECKER_BUILD_TAG=true" >> $GITHUB_ENV
+          AGENT_TAGS=$(curl -s https://registry.hub.docker.com/v1/repositories/florianpiesche/woodpecker-agent/tags | jq -r ".[].name")
+          for tag in ${AGENT_TAGS[@]}; do
+            if [[ "$tag" == "${WOODPECKER_VERSION}" ]]; then
+              echo "Agent ${tag} has already been built."
+              echo "WOODPECKER_BUILD_AGENT=false" >> $GITHUB_ENV
+              exit 0
+            fi
+          done
+          echo "Agent ${WOODPECKER_VERSION} needs to be built."
+          echo "WOODPECKER_BUILD_AGENT=true" >> $GITHUB_ENV
 
       - name: Docker Setup QEMU
-        if: env.WOODPECKER_BUILD_TAG == 'true'
+        if: (env.WOODPECKER_BUILD_SERVER == 'true' || env.WOODPECKER_BUILD_AGENT == 'true')
         uses: docker/setup-qemu-action@v1.0.1
 
       - name: Docker Setup Buildx
-        if: env.WOODPECKER_BUILD_TAG == 'true'
+        if: (env.WOODPECKER_BUILD_SERVER == 'true' || env.WOODPECKER_BUILD_AGENT == 'true')
         uses: docker/setup-buildx-action@v1.0.3
         with:
           driver-opts: network=host
 
       - name: Build Woodpecker
-        if: env.WOODPECKER_BUILD_TAG == 'true'
+        if: (env.WOODPECKER_BUILD_SERVER == 'true' || env.WOODPECKER_BUILD_AGENT == 'true')
         uses: docker/build-push-action@v2.1.0
         with:
           file: Dockerfile.build
@@ -79,7 +90,7 @@ jobs:
           build-args: VERSION=${{ env.WOODPECKER_VERSION }}
 
       - name: Build and push Woodpecker Server image
-        if: env.WOODPECKER_BUILD_TAG == 'true'
+        if: env.WOODPECKER_BUILD_SERVER == 'true'
         uses: docker/build-push-action@v2.1.0
         with:
           file: Dockerfile.server
@@ -90,7 +101,7 @@ jobs:
           push: true
 
       - name: Build and push Woodpecker Agent image
-        if: env.WOODPECKER_BUILD_TAG == 'true'
+        if: env.WOODPECKER_BUILD_AGENT == 'true'
         uses: docker/build-push-action@v2.1.0
         with:
           file: Dockerfile.agent
