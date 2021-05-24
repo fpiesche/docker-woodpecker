@@ -47,27 +47,29 @@ jobs:
 
       - name: Check whether latest release needs building
         run: |
+          # Assume we're going to build both server and agent unless the images already exist.
+          echo "WOODPECKER_BUILD_SERVER=true" >> $GITHUB_ENV
+          echo "WOODPECKER_BUILD_AGENT=true" >> $GITHUB_ENV
+
+          # Check whether we can skip building the server
           SERVER_TAGS=$(curl -s https://registry.hub.docker.com/v1/repositories/florianpiesche/woodpecker-server/tags | jq -r ".[].name")
           for tag in ${SERVER_TAGS[@]}; do
             if [[ "$tag" == "${WOODPECKER_VERSION}" ]]; then
               echo "Server ${tag} has already been built."
               echo "WOODPECKER_BUILD_SERVER=false" >> $GITHUB_ENV
-              exit 0
+              break
             fi
           done
-          echo "Server ${WOODPECKER_VERSION} needs to be built."
-          echo "WOODPECKER_BUILD_SERVER=true" >> $GITHUB_ENV
 
+          # Check whether we can skip building the agent
           AGENT_TAGS=$(curl -s https://registry.hub.docker.com/v1/repositories/florianpiesche/woodpecker-agent/tags | jq -r ".[].name")
           for tag in ${AGENT_TAGS[@]}; do
             if [[ "$tag" == "${WOODPECKER_VERSION}" ]]; then
               echo "Agent ${tag} has already been built."
               echo "WOODPECKER_BUILD_AGENT=false" >> $GITHUB_ENV
-              exit 0
+              break
             fi
           done
-          echo "Agent ${WOODPECKER_VERSION} needs to be built."
-          echo "WOODPECKER_BUILD_AGENT=true" >> $GITHUB_ENV
 
       - name: Docker Setup QEMU
         if: (env.WOODPECKER_BUILD_SERVER == 'true' || env.WOODPECKER_BUILD_AGENT == 'true')
