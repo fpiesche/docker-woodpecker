@@ -36,8 +36,7 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Get Woodpecker version
-        id: get_woodpecker_version
+      - name: Get latest Woodpecker tag
         run: |
           cd woodpecker
           git fetch --tags
@@ -47,21 +46,22 @@ jobs:
           git checkout ${WOODPECKER_VERSION}
 
       - name: Check whether latest tag needs building
-        id: check_tag_exists
-        continue-on-error: true
         run: |
+          echo "Checking whether tag florianpiesche/woodpecker-server:${WOODPECKER_VERSION} Docker image exists."
           TAGS=$(curl -s https://registry.hub.docker.com/v1/repositories/florianpiesche/woodpecker-server/tags | jq -r ".[].name")
-          echo ${TAGS}
-          if [[ "${TAGS}" == *" ${WOODPECKER_VERSION} "* ]]; then
-            echo "Tag ${WOODPECKER_VERSION} already built."
-            exit 0
+
+          if [[ "${TAGS}" == *"${WOODPECKER_VERSION}"* ]]; then
+            echo "WOODPECKER_TAG_EXISTS=true" >> $GITHUB_ENV
           else
-            echo "Tag ${WOODPECKER_VERSION} not yet built."
-            exit 1
+            echo "WOODPECKER_TAG_EXISTS=false" >> $GITHUB_ENV
           fi
 
+      - name: Run this only if tag needs building
+        if: env.WOODPECKER_TAG_EXISTS == 'false'
+        run: echo "Tag ${WOODPECKER_VERSION} needs building."
+
       # - name: Docker Setup QEMU
-      #   if: ${{ steps.check_tag_exists.outcome == success() }}
+      #   if: env.WOODPECKER_TAG_EXISTS == 'false'
       #   uses: docker/setup-qemu-action@v1.0.1
 
       # - name: Docker Setup Buildx
