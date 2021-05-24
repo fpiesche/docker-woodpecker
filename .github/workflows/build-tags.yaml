@@ -84,7 +84,7 @@ jobs:
         with:
           file: Dockerfile.server
           tags: |
-            florianpiesche/woodpecker-server
+            florianpiesche/woodpecker-server:latest
             florianpiesche/woodpecker-server:${{ env.WOODPECKER_VERSION }}
           platforms: ${{ env.PLATFORMS }}
           push: true
@@ -95,7 +95,7 @@ jobs:
         with:
           file: Dockerfile.agent
           tags: |
-            florianpiesche/woodpecker-agent
+            florianpiesche/woodpecker-agent:latest
             florianpiesche/woodpecker-agent:${{ env.WOODPECKER_VERSION }}
           platforms: ${{ env.PLATFORMS }}
           push: true
