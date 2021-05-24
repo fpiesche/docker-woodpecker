@@ -1,9 +1,13 @@
 # STAGE 3: assemble final image
 FROM alpine:latest
+ARG VERSION="unknown"
+
+ENV GODEBUG netdns=go
+ENV WOODPECKER_VERSION ${VERSION}
+
 RUN apk add -U --no-cache ca-certificates
 COPY --from=localhost:5000/woodpecker/build /woodpecker/release/drone-agent /bin/
 
-ENV GODEBUG=netdns=go
 EXPOSE 3000
 HEALTHCHECK CMD ["/bin/drone-agent", "ping"]
 
