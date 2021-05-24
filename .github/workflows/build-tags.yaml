@@ -47,15 +47,18 @@ jobs:
 
       - name: Check whether latest tag needs building
         run: |
-          echo "Checking whether tag florianpiesche/woodpecker-server:${WOODPECKER_VERSION} Docker image exists."
           TAGS=$(curl -s https://registry.hub.docker.com/v1/repositories/florianpiesche/woodpecker-server/tags | jq -r ".[].name")
-          echo "Got tags: ${TAGS}"
 
-          if [[ "${TAGS[@]}" =~ "${WOODPECKER_VERSION}" ]]; then
-            echo "WOODPECKER_TAG_EXISTS=true" >> $GITHUB_ENV
-          else
-            echo "WOODPECKER_TAG_EXISTS=false" >> $GITHUB_ENV
-          fi
+          for tag in ${TAGS[@]}; do
+            if [[ "$tag" == "${WOODPECKER_VERSION}" ]]; then
+              echo "WOODPECKER_TAG_EXISTS=true" >> $GITHUB_ENV
+              echo "Found tag ${WOODPECKER_VERSION}!"
+              exit 0
+            fi
+          done
+
+          echo "Failed to find tag ${WOODPECKER_VERSION}."
+          echo "WOODPECKER_TAG_EXISTS=false" >> $GITHUB_ENV
 
       - name: Run this only if tag needs building
         if: env.WOODPECKER_TAG_EXISTS == 'false'
