@@ -99,6 +99,7 @@ jobs:
             florianpiesche/woodpecker-server:${{ env.WOODPECKER_VERSION }}
           platforms: ${{ env.PLATFORMS }}
           push: true
+          build-args: VERSION=${{ env.WOODPECKER_VERSION }}
 
       - name: Build and push Woodpecker Agent image
         if: env.WOODPECKER_BUILD_AGENT == 'true'
@@ -110,3 +111,4 @@ jobs:
             florianpiesche/woodpecker-agent:${{ env.WOODPECKER_VERSION }}
           platforms: ${{ env.PLATFORMS }}
           push: true
+          build-args: VERSION=${{ env.WOODPECKER_VERSION }}
