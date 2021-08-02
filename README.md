@@ -11,6 +11,8 @@ executables inside a Docker container, so that multi-arch builds can be created 
 the `Dockerfile.agent` and `Dockerfile.server` files will then copy the executables out of the relevant
 containers and into new Alpine Linux containers to minimise final image size.
 
-The finished images are available on Docker Hub at
-[florianpiesche/woodpecker-server](https://hub.docker.com/r/florianpiesche/woodpecker-server) and
-[florianpiesche/woodpecker-agent](https://hub.docker.com/r/florianpiesche/woodpecker-agent) respectively.
+The finished images are available as:
+- [florianpiesche/woodpecker-server](https://hub.docker.com/r/florianpiesche/woodpecker-server)
+- [ghcr.io/fpiesche/woodpecker-server](https://ghcr.io/fpiesche/woodpecker-server)
+- [florianpiesche/woodpecker-agent](https://hub.docker.com/r/florianpiesche/woodpecker-agent)
+- [ghcr.io/fpiesche/woodpecker-agent](https://ghcr.io/fpiesche/woodpecker-agent)
