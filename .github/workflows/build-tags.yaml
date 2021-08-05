@@ -8,9 +8,7 @@ on:
     branches:
       - main
   pull_request:
-    branches:
-      - main
-  
+
 env:
   PLATFORMS: linux/arm/v6,linux/arm/v7,linux/arm64/v8,linux/amd64
 
@@ -98,8 +96,36 @@ jobs:
           push: true
           build-args: VERSION=${{ env.WOODPECKER_VERSION }}
 
+      - name: Build Woodpecker Server image
+        if: (github.ref != 'refs/heads/main' && env.WOODPECKER_BUILD_SERVER == 'true')
+        uses: docker/build-push-action@v2
+        with:
+          file: Dockerfile.server
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/woodpecker-server:stable
+            ghcr.io/${{ github.repository_owner }}/woodpecker-server:${{ env.WOODPECKER_VERSION }}
+            florianpiesche/woodpecker-server:stable
+            florianpiesche/woodpecker-server:${{ env.WOODPECKER_VERSION }}
+          platforms: ${{ env.PLATFORMS }}
+          push: false
+          build-args: VERSION=${{ env.WOODPECKER_VERSION }}
+
+      - name: Build Woodpecker Agent image
+        if: (github.ref != 'refs/heads/main' && env.WOODPECKER_BUILD_AGENT == 'true')
+        uses: docker/build-push-action@v2
+        with:
+          file: Dockerfile.agent
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/woodpecker-server:stable
+            ghcr.io/${{ github.repository_owner }}/woodpecker-server:${{ env.WOODPECKER_VERSION }}
+            florianpiesche/woodpecker-server:stable
+            florianpiesche/woodpecker-server:${{ env.WOODPECKER_VERSION }}
+          platforms: ${{ env.PLATFORMS }}
+          push: false
+          build-args: VERSION=${{ env.WOODPECKER_VERSION }}
+
       - name: Build and push Woodpecker Server image
-        if: env.WOODPECKER_BUILD_SERVER == 'true'
+        if: (github.ref == 'refs/heads/main' && env.WOODPECKER_BUILD_SERVER == 'true')
         uses: docker/build-push-action@v2
         with:
           file: Dockerfile.server
@@ -113,7 +139,7 @@ jobs:
           build-args: VERSION=${{ env.WOODPECKER_VERSION }}
 
       - name: Build and push Woodpecker Agent image
-        if: env.WOODPECKER_BUILD_AGENT == 'true'
+        if: (github.ref == 'refs/heads/main' && env.WOODPECKER_BUILD_AGENT == 'true')
         uses: docker/build-push-action@v2
         with:
           file: Dockerfile.agent
