@@ -11,10 +11,11 @@ on:
 
 env:
   PLATFORMS: linux/arm/v6,linux/arm/v7,linux/arm64/v8,linux/amd64
+  PUSH_IMAGE: ${{ github.ref == 'refs/heads/main' }}
 
 jobs:
 
-  build-image:
+  build-images:
     runs-on: ubuntu-latest
 
     services:
@@ -29,12 +30,14 @@ jobs:
           submodules: recursive
 
       - name: Login to DockerHub
+        if: env.PUSH_IMAGE
         uses: docker/login-action@v1 
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Login to GitHub Container Registry
+        if: env.PUSH_IMAGE
         uses: docker/login-action@v1 
         with:
           registry: ghcr.io
@@ -57,7 +60,7 @@ jobs:
           echo "WOODPECKER_BUILD_AGENT=true" >> $GITHUB_ENV
 
           # Check whether we can skip building the server
-          SERVER_TAGS=$(curl -s https://registry.hub.docker.com/v1/repositories/florianpiesche/woodpecker-server/tags | jq -r ".[].name")
+          SERVER_TAGS=$(curl -s https://registry.hub.docker.com/v1/repositories/${{ secrets.DOCKERHUB_USERNAME }}/woodpecker-server/tags | jq -r ".[].name")
           for tag in ${SERVER_TAGS[@]}; do
             if [[ "$tag" == "${WOODPECKER_VERSION}" ]]; then
               echo "Server ${tag} has already been built."
@@ -67,7 +70,7 @@ jobs:
           done
 
           # Check whether we can skip building the agent
-          AGENT_TAGS=$(curl -s https://registry.hub.docker.com/v1/repositories/florianpiesche/woodpecker-agent/tags | jq -r ".[].name")
+          AGENT_TAGS=$(curl -s https://registry.hub.docker.com/v1/repositories/${{ secrets.DOCKERHUB_USERNAME }}/woodpecker-agent/tags | jq -r ".[].name")
           for tag in ${AGENT_TAGS[@]}; do
             if [[ "$tag" == "${WOODPECKER_VERSION}" ]]; then
               echo "Agent ${tag} has already been built."
@@ -97,47 +100,25 @@ jobs:
           build-args: VERSION=${{ env.WOODPECKER_VERSION }}
 
       - name: Build Woodpecker Server image
-        if: (github.ref != 'refs/heads/main' && env.WOODPECKER_BUILD_SERVER == 'true')
+        if: env.WOODPECKER_BUILD_SERVER
         uses: docker/build-push-action@v2
         with:
           file: Dockerfile.server
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/woodpecker-server:${{ env.WOODPECKER_VERSION }}
+            florianpiesche/woodpecker-server:${{ env.WOODPECKER_VERSION }}
           platforms: ${{ env.PLATFORMS }}
-          push: false
+          push: ${{ env.PUSH_IMAGE }}
           build-args: VERSION=${{ env.WOODPECKER_VERSION }}
 
       - name: Build Woodpecker Agent image
-        if: (github.ref != 'refs/heads/main' && env.WOODPECKER_BUILD_AGENT == 'true')
-        uses: docker/build-push-action@v2
-        with:
-          file: Dockerfile.agent
-          platforms: ${{ env.PLATFORMS }}
-          push: false
-          build-args: VERSION=${{ env.WOODPECKER_VERSION }}
-
-      - name: Build and push Woodpecker Server image
-        if: (github.ref == 'refs/heads/main' && env.WOODPECKER_BUILD_SERVER == 'true')
-        uses: docker/build-push-action@v2
-        with:
-          file: Dockerfile.server
-          tags: |
-            ghcr.io/${{ github.repository_owner }}/woodpecker-server:stable
-            ghcr.io/${{ github.repository_owner }}/woodpecker-server:${{ env.WOODPECKER_VERSION }}
-            florianpiesche/woodpecker-server:stable
-            florianpiesche/woodpecker-server:${{ env.WOODPECKER_VERSION }}
-          platforms: ${{ env.PLATFORMS }}
-          push: true
-          build-args: VERSION=${{ env.WOODPECKER_VERSION }}
-
-      - name: Build and push Woodpecker Agent image
-        if: (github.ref == 'refs/heads/main' && env.WOODPECKER_BUILD_AGENT == 'true')
+        if: env.WOODPECKER_BUILD_AGENT
         uses: docker/build-push-action@v2
         with:
           file: Dockerfile.agent
           tags: |
-            ghcr.io/${{ github.repository_owner }}/woodpecker-server:stable
-            ghcr.io/${{ github.repository_owner }}/woodpecker-server:${{ env.WOODPECKER_VERSION }}
-            florianpiesche/woodpecker-server:stable
-            florianpiesche/woodpecker-server:${{ env.WOODPECKER_VERSION }}
+            ghcr.io/${{ github.repository_owner }}/woodpecker-agent:${{ env.WOODPECKER_VERSION }}
+            florianpiesche/woodpecker-agent:${{ env.WOODPECKER_VERSION }}
           platforms: ${{ env.PLATFORMS }}
-          push: true
+          push: ${{ env.PUSH_IMAGE }}
           build-args: VERSION=${{ env.WOODPECKER_VERSION }}
