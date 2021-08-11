@@ -80,17 +80,17 @@ jobs:
           done
 
       - name: Docker Setup QEMU
-        if: (env.WOODPECKER_BUILD_SERVER == 'true' || env.WOODPECKER_BUILD_AGENT == 'true')
+        if: ${{ env.WOODPECKER_BUILD_SERVER || env.WOODPECKER_BUILD_AGENT }}
         uses: docker/setup-qemu-action@v1
 
       - name: Docker Setup Buildx
-        if: (env.WOODPECKER_BUILD_SERVER == 'true' || env.WOODPECKER_BUILD_AGENT == 'true')
+        if: ${{ env.WOODPECKER_BUILD_SERVER || env.WOODPECKER_BUILD_AGENT }}
         uses: docker/setup-buildx-action@v1
         with:
           driver-opts: network=host
 
       - name: Build Woodpecker
-        if: (env.WOODPECKER_BUILD_SERVER == 'true' || env.WOODPECKER_BUILD_AGENT == 'true')
+        if: ${{ env.WOODPECKER_BUILD_SERVER || env.WOODPECKER_BUILD_AGENT }}
         uses: docker/build-push-action@v2
         with:
           file: Dockerfile.build
@@ -100,7 +100,7 @@ jobs:
           build-args: VERSION=${{ env.WOODPECKER_VERSION }}
 
       - name: Build Woodpecker Server image
-        if: env.WOODPECKER_BUILD_SERVER
+        if: ${{ env.WOODPECKER_BUILD_SERVER }}
         uses: docker/build-push-action@v2
         with:
           file: Dockerfile.server
@@ -112,7 +112,7 @@ jobs:
           build-args: VERSION=${{ env.WOODPECKER_VERSION }}
 
       - name: Build Woodpecker Agent image
-        if: env.WOODPECKER_BUILD_AGENT
+        if: ${{ env.WOODPECKER_BUILD_AGENT }}
         uses: docker/build-push-action@v2
         with:
           file: Dockerfile.agent
