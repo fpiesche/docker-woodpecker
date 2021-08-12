@@ -12,6 +12,8 @@ on:
 env:
   PLATFORMS: linux/arm/v6,linux/arm/v7,linux/arm64/v8,linux/amd64
   PUSH_IMAGE: ${{ github.ref == 'refs/heads/main' }}
+  WOODPECKER_BUILD_AGENT: true
+  WOODPECKER_BUILD_SERVER: true
 
 jobs:
 
@@ -54,6 +56,7 @@ jobs:
           git checkout ${WOODPECKER_VERSION}
 
       - name: Check whether latest release needs building
+        if: ${{ env.PUSH_IMAGE }}
         run: |
           # Assume we're going to build both server and agent unless the images already exist.
           echo "WOODPECKER_BUILD_SERVER=true" >> $GITHUB_ENV
