@@ -16,3 +16,7 @@ The finished images are available as:
 - [ghcr.io/fpiesche/woodpecker-server](https://ghcr.io/fpiesche/woodpecker-server)
 - [florianpiesche/woodpecker-agent](https://hub.docker.com/r/florianpiesche/woodpecker-agent)
 - [ghcr.io/fpiesche/woodpecker-agent](https://ghcr.io/fpiesche/woodpecker-agent)
+
+The `latest` tag is the most recent release build; the `dev` tag the most recent commit to the main
+Woodpecker repository. Images for release builds are also tagged with the specific git release tag,
+and development builds with the git commit ID they were built from.
