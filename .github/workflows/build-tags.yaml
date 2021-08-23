@@ -104,6 +104,8 @@ jobs:
         with:
           file: Dockerfile.server
           tags: |
+            ghcr.io/${{ github.repository_owner }}/woodpecker-server:latest
+            florianpiesche/woodpecker-server:latest
             ghcr.io/${{ github.repository_owner }}/woodpecker-server:${{ env.WOODPECKER_VERSION }}
             florianpiesche/woodpecker-server:${{ env.WOODPECKER_VERSION }}
           platforms: ${{ env.PLATFORMS }}
@@ -116,6 +118,8 @@ jobs:
         with:
           file: Dockerfile.agent
           tags: |
+            ghcr.io/${{ github.repository_owner }}/woodpecker-agent:latest
+            florianpiesche/woodpecker-agent:latest
             ghcr.io/${{ github.repository_owner }}/woodpecker-agent:${{ env.WOODPECKER_VERSION }}
             florianpiesche/woodpecker-agent:${{ env.WOODPECKER_VERSION }}
           platforms: ${{ env.PLATFORMS }}

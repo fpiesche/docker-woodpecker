@@ -70,9 +70,9 @@ jobs:
         with:
           file: Dockerfile.server
           tags: |
-            ghcr.io/${{ github.repository_owner }}/woodpecker-server:latest
+            ghcr.io/${{ github.repository_owner }}/woodpecker-server:dev
             ghcr.io/${{ github.repository_owner }}/woodpecker-server:${{ env.WOODPECKER_COMMIT }}
-            florianpiesche/woodpecker-server:latest
+            florianpiesche/woodpecker-server:dev
             florianpiesche/woodpecker-server:${{ env.WOODPECKER_COMMIT }}
           platforms: ${{ env.PLATFORMS }}
           push: ${{ env.PUSH_IMAGE }}
