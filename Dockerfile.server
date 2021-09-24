@@ -7,8 +7,9 @@ ENV GODEBUG netdns=go
 ENV XDG_CACHE_HOME /var/lib/drone
 ENV WOODPECKER_VERSION ${VERSION}
 
-COPY --from=localhost:5000/woodpecker/build /woodpecker/release/server /bin/
-RUN ln -s /bin/server /bin/drone-server
+COPY --from=localhost:5000/woodpecker/build /woodpecker/release/woodpecker-server /bin/woodpecker-server
+RUN ln -s /bin/woodpecker-server /bin/server
+RUN ln -s /bin/woodpecker-server /bin/drone-server
 
 EXPOSE 8000 9000 80 443
 
