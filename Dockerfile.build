@@ -1,12 +1,13 @@
 # STAGE 1: Run tests
 FROM golang:alpine as test
 ARG VERSION
-RUN apk add --no-cache gcc musl-dev
+RUN apk add --no-cache gcc musl-dev make
 ADD ./woodpecker /woodpecker
 
 ENV VERSION=${VERSION} GOOS=linux
 WORKDIR /woodpecker
-RUN go test -cover $(go list ./...)
+RUN make test
+RUN make test-frontend
 
 # STAGE 2: build
 FROM test AS build
