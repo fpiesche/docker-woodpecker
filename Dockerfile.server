@@ -2,12 +2,12 @@ FROM alpine:latest
 ARG VERSION="unknown"
 
 ENV DATABASE_DRIVER sqlite3
-ENV DATABASE_CONFIG /var/lib/drone/drone.sqlite
+ENV DATABASE_CONFIG /var/lib/woodpecker/woodpecker.sqlite
 ENV GODEBUG netdns=go
-ENV XDG_CACHE_HOME /var/lib/drone
+ENV XDG_CACHE_HOME /var/lib/woodpecker
 ENV WOODPECKER_VERSION ${VERSION}
 
-COPY --from=localhost:5000/woodpecker/build /woodpecker/release/woodpecker-server /bin/woodpecker-server
+COPY --from=localhost:5000/woodpecker/build /woodpecker/dist/woodpecker-server /bin/woodpecker-server
 RUN ln -s /bin/woodpecker-server /bin/server
 RUN ln -s /bin/woodpecker-server /bin/drone-server
 

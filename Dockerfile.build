@@ -1,17 +1,15 @@
 # STAGE 1: Run tests
 FROM golang:alpine as test
-ARG VERSION
-RUN apk add --no-cache gcc musl-dev make
+RUN apk add --no-cache gcc musl-dev make yarn
 ADD ./woodpecker /woodpecker
 
-ENV VERSION=${VERSION} GOOS=linux
+ENV GOOS=linux
 WORKDIR /woodpecker
-RUN make test
+RUN if $(arch) == "aarch64" || $(arch) == "amd64"; then make test; fi
 RUN make test-frontend
 
 # STAGE 2: build
 FROM test AS build
-ARG VERSION
-ENV VERSION=${VERSION} GOOS=linux
-RUN go build -ldflags '-extldflags "-static" -X github.com/woodpecker-ci/woodpecker/version.Version=${VERSION}' -o release/woodpecker-server github.com/woodpecker-ci/woodpecker/cmd/server
-RUN go build -ldflags '-extldflags "-static" -X github.com/woodpecker-ci/woodpecker/version.Version=${VERSION}' -o release/woodpecker-agent github.com/woodpecker-ci/woodpecker/cmd/agent
+# ARG VERSION
+ENV GOOS=linux CGO_ENABLED=0 
+RUN make build

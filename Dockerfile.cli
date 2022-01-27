@@ -1,0 +1,12 @@
+# STAGE 3: assemble final image
+FROM alpine:latest
+ARG VERSION="unknown"
+
+ENV GODEBUG netdns=go
+ENV WOODPECKER_VERSION ${VERSION}
+
+RUN apk add -U --no-cache ca-certificates
+COPY --from=localhost:5000/woodpecker/build /woodpecker/dist/woodpecker-cli /bin/woodpecker-cli
+RUN ln -s /bin/woodpecker-cli /bin/cli
+
+CMD ["/bin/cli"]

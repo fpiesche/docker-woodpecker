@@ -6,7 +6,7 @@ ENV GODEBUG netdns=go
 ENV WOODPECKER_VERSION ${VERSION}
 
 RUN apk add -U --no-cache ca-certificates
-COPY --from=localhost:5000/woodpecker/build /woodpecker/release/woodpecker-agent /bin/woodpecker-agent
+COPY --from=localhost:5000/woodpecker/build /woodpecker/dist/woodpecker-agent /bin/woodpecker-agent
 RUN ln -s /bin/woodpecker-agent /bin/agent
 RUN ln -s /bin/woodpecker-agent /bin/drone-agent
 
