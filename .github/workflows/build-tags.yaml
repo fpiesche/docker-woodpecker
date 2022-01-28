@@ -68,6 +68,8 @@ jobs:
               break
             fi
           done
+          echo "WOODPECKER_BUILD_SERVER=true" >> $GITHUB_ENV
+
 
           # Check whether we can skip building the agent
           AGENT_TAGS=$(curl -s https://registry.hub.docker.com/v1/repositories/${{ secrets.DOCKERHUB_USERNAME }}/woodpecker-agent/tags | jq -r ".[].name")
