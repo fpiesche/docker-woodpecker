@@ -10,7 +10,8 @@ on:
   pull_request:
 
 env:
-  PLATFORMS: linux/arm/v6,linux/arm/v7,linux/arm64/v8,linux/amd64
+  PLATFORMS: linux/arm64/v8,linux/amd64
+  # PLATFORMS: linux/arm/v6,linux/arm/v7,linux/arm64/v8,linux/amd64
   PUSH_IMAGE: ${{ github.ref == 'refs/heads/main' }}
   WOODPECKER_BUILD_AGENT: true
   WOODPECKER_BUILD_SERVER: true
@@ -112,16 +113,16 @@ jobs:
           push: ${{ env.PUSH_IMAGE }}
           build-args: VERSION=${{ env.WOODPECKER_VERSION }}
 
-      - name: Build Woodpecker Agent image
-        if: ${{ env.WOODPECKER_BUILD_AGENT == 'true' }}
-        uses: docker/build-push-action@v2
-        with:
-          file: Dockerfile.agent
-          tags: |
-            ghcr.io/${{ github.repository_owner }}/woodpecker-agent:latest
-            florianpiesche/woodpecker-agent:latest
-            ghcr.io/${{ github.repository_owner }}/woodpecker-agent:${{ env.WOODPECKER_VERSION }}
-            florianpiesche/woodpecker-agent:${{ env.WOODPECKER_VERSION }}
-          platforms: ${{ env.PLATFORMS }}
-          push: ${{ env.PUSH_IMAGE }}
-          build-args: VERSION=${{ env.WOODPECKER_VERSION }}
+      # - name: Build Woodpecker Agent image
+      #   if: ${{ env.WOODPECKER_BUILD_AGENT == 'true' }}
+      #   uses: docker/build-push-action@v2
+      #   with:
+      #     file: Dockerfile.agent
+      #     tags: |
+      #       ghcr.io/${{ github.repository_owner }}/woodpecker-agent:latest
+      #       florianpiesche/woodpecker-agent:latest
+      #       ghcr.io/${{ github.repository_owner }}/woodpecker-agent:${{ env.WOODPECKER_VERSION }}
+      #       florianpiesche/woodpecker-agent:${{ env.WOODPECKER_VERSION }}
+      #     platforms: ${{ env.PLATFORMS }}
+      #     push: ${{ env.PUSH_IMAGE }}
+      #     build-args: VERSION=${{ env.WOODPECKER_VERSION }}

@@ -5,11 +5,11 @@ ADD ./woodpecker /woodpecker
 
 ENV GOOS=linux
 WORKDIR /woodpecker
-RUN if $(arch) == "aarch64" || $(arch) == "amd64"; then make test; fi
+RUN make test
 RUN make test-frontend
 
 # STAGE 2: build
 FROM test AS build
 # ARG VERSION
 ENV GOOS=linux CGO_ENABLED=0 
-RUN make build
+RUN make build-server
