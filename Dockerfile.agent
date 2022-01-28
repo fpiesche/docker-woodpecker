@@ -1,5 +1,5 @@
 # STAGE 3: assemble final image
-FROM alpine:latest
+FROM alpine:3.15
 ARG VERSION="unknown"
 
 ENV GODEBUG netdns=go

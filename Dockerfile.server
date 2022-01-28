@@ -1,4 +1,4 @@
-FROM alpine:latest
+FROM alpine:3.15
 ARG VERSION="unknown"
 
 ENV DATABASE_DRIVER sqlite3
