@@ -1,5 +1,5 @@
 # STAGE 1: Run tests
-FROM golang:1.17.6-alpine3.15 as test
+FROM golang:1.18rc1-alpine3.15 as test
 RUN apk add --no-cache gcc musl-dev make yarn
 ADD ./woodpecker /woodpecker
 
