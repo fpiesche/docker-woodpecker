@@ -1,3 +1,5 @@
+**Note**: this repository is archived as the Woodpecker project is now offering official ARM64 images.
+
 # Multi-Arch Woodpecker Builds
 
 This repo is set up to automate creating multi-arch Docker images (arm64, amd64) for
